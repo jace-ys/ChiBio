@@ -1,1 +1,1 @@
-gunicorn -b 192.168.7.2:5000 app:application
+poetry run gunicorn -b 127.0.0.1:5000 app:application
