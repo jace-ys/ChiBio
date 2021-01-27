@@ -5,7 +5,7 @@ import os
 import random
 import time
 import math
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from threading import Thread, Lock
 import threading
 import numpy as np
@@ -445,6 +445,42 @@ def getSysdata():
             else:
                 outputdata['presentDevices'][M]=0
     return jsonify(outputdata)
+
+
+@application.route("/sysData", methods=["POST"])
+def setSysData():
+    global sysData
+
+    # Find an available device to run experiment on
+    available = None
+    for M, sysDataM in sysData.items():
+        if not sysDataM["Experiment"]["ON"] and sysDataM["present"]:
+            available = M
+            break
+
+    if available is None:
+        err = {"error": "no device currently available"}
+        return (jsonify(err), 422)
+
+    # Get request source and data, and display source on terminal for device M
+    try:
+        source = request.json["source"]
+        data = request.json["data"]
+        addTerminal(available, f"SysData configured by source: {source}")
+    except KeyError as err:
+        return (jsonify({"error": f"missing field {str(err)} in input sysData"}), 400)
+
+    # Merge request data into each key of sysData for device M
+    try:
+        for key, value in data.items():
+            default = sysData[available][key]
+            sysData[available][key] = {**default, **value}
+            addTerminal(available, f"{key}: {value}")
+    except KeyError as err:
+        return (jsonify({"error": f"could not find key {str(err)} in sysData"}), 400)
+
+    return jsonify({ available: sysData[available] })
+
 
 @application.route('/changeDevice/<M>',methods=['POST'])
 def changeDevice(M):
