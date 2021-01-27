@@ -1289,7 +1289,6 @@ def CharacteriseDevice2(M):
         'LASER650' : {'nm410' : [],'nm440' : [],'nm470' : [],'nm510' : [],'nm550' : [],'nm583' : [],'nm620' : [],'nm670' : [],'CLEAR' : []},
         }
 
-
     print('Got in!')
     bands=['nm410' ,'nm440','nm470','nm510','nm550','nm583','nm620','nm670','CLEAR']
     powerlevels=[0,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
@@ -1350,7 +1349,6 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     tries=0
     while(tries!=-1):
         try:
-            print('Connected multiplexer on ' + str(M))
             # sysItems['Multiplexer']['device'].write8(int(0x00),int(sysItems['Multiplexer'][M],2)) #We have established connection to correct device.
             # check=(sysItems['Multiplexer']['device'].readRaw8()) #We check that the Multiplexer is indeed connected to the correct channel.
             if True:
@@ -1388,19 +1386,24 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             if SMBUSFLAG==0:
                 if rw==1:
                     if hl==8:
-                        out=int(sysDevices[M][device]['device'].readU8(data1))
+                        pass
+                        # out=int(sysDevices[M][device]['device'].readU8(data1))
                     elif(hl==16):
-                        out=int(sysDevices[M][device]['device'].readU16(data1,data2))
+                        pass
+                        # out=int(sysDevices[M][device]['device'].readU16(data1,data2))
                 else:
                     if hl==8:
-                        sysDevices[M][device]['device'].write8(data1,data2)
+                        pass
+                        # sysDevices[M][device]['device'].write8(data1,data2)
                         out=1
                     elif(hl==16):
-                        sysDevices[M][device]['device'].write16(data1,data2)
+                        pass
+                        # sysDevices[M][device]['device'].write16(data1,data2)
                         out=1
 
             elif SMBUSFLAG==1:
-                out=sysDevices[M][device]['device'].read_word_data(sysDevices[M][device]['address'],data1)
+                pass
+                # out=sysDevices[M][device]['device'].read_word_data(sysDevices[M][device]['address'],data1)
             tries=-1
         except: #If the above fails then we can try again (a limited number of times)
             tries=tries+1
@@ -1686,17 +1689,17 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
     CheckLowON=I2CCom(M,device,1,8,channels['ONL'],-1,0)
     CheckHighON=I2CCom(M,device,1,8,channels['ONH'],-1,0)
 
-    if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
-        ConsecutiveFails=ConsecutiveFails+1
-        print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
-        if ConsecutiveFails>10:
-            sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software.
-            print('Failed to communicate to PWM 10 times. Disabling hardware and software!')
-            os._exit(4)
-        else:
-            time.sleep(0.1)
-            sysItems['FailCount']=sysItems['FailCount']+1
-            setPWM(M,device,channels,fraction,ConsecutiveFails)
+    # if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
+    #     ConsecutiveFails=ConsecutiveFails+1
+    #     print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
+    #     if ConsecutiveFails>10:
+    #         sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software.
+    #         print('Failed to communicate to PWM 10 times. Disabling hardware and software!')
+    #         os._exit(4)
+    #     else:
+    #         time.sleep(0.1)
+    #         sysItems['FailCount']=sysItems['FailCount']+1
+    #         setPWM(M,device,channels,fraction,ConsecutiveFails)
 
 
 
@@ -2003,7 +2006,7 @@ def ExperimentStartStop(M,value):
     value=int(value)
     #Turning it on involves keeping current pump directions,
     if (value and (sysData[M]['Experiment']['ON']==0)):
-
+        print(str(datetime.now()) + " Experiment started")
         sysData[M]['Experiment']['ON']=1
         addTerminal(M,'Experiment Started')
 
@@ -2024,6 +2027,7 @@ def ExperimentStartStop(M,value):
         sysDevices[M]['Experiment'].start();
 
     else:
+        print(str(datetime.now()) + " Experiment stopped")
         sysData[M]['Experiment']['ON']=0
         sysData[M]['OD']['ON']=0
         addTerminal(M,'Experiment Stopping at end of cycle')
@@ -2067,14 +2071,14 @@ def runExperiment(M,placeholder):
     #We now meausre OD 4 times and take the average to reduce noise when in auto mode!
     ODV=0.0
     for i in [0, 1, 2, 3]:
-        MeasureOD(M)
+        # MeasureOD(M)
         ODV=ODV+sysData[M]['OD']['current']
         time.sleep(0.25)
     sysData[M]['OD']['current']=ODV/4.0
 
-    MeasureTemp(M,'Internal') #Measuring all temperatures
-    MeasureTemp(M,'External')
-    MeasureTemp(M,'IR')
+    # MeasureTemp(M,'Internal') #Measuring all temperatures
+    # MeasureTemp(M,'External')
+    # MeasureTemp(M,'IR')
     MeasureFP(M) #And now fluorescent protein concentrations.
 
     #Temporary Biofilm Section - the below makes the device all spectral data for all LEDs each cycle.
@@ -2183,8 +2187,6 @@ def runExperiment(M,placeholder):
     else:
         turnEverythingOff(M)
         addTerminal(M,'Experiment Stopped')
-
-
 
 
 if __name__ == '__main__':
