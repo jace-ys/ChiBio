@@ -1762,7 +1762,7 @@ def csvData(M):
     if len(row) != len(fieldnames):
         raise ValueError('CSV_WRITER: mismatch between column num and header num')
 
-    filename = sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
+    filename = "data/" + sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
     filename=filename.replace(":","_")
 
     lock.acquire() #We are avoiding writing to a file at the same time as we do digital communications, since it might potentially cause the computer to lag and consequently data transfer to fail.
@@ -2153,7 +2153,7 @@ def runExperiment(M,placeholder):
         TempStartTime=sysData[M]['Experiment']['startTimeRaw']
         sysData[M]['Experiment']['startTimeRaw']=0 #We had to set this to zero during the write operation since the system does not like writing data in such a format.
 
-        filename = sysData[M]['Experiment']['startTime'] + '_' + M + '.txt'
+        filename = "data/" + sysData[M]['Experiment']['startTime'] + '_' + M + '.txt'
         filename=filename.replace(":","_")
         f = open(filename,'w')
         simplejson.dump(sysData[M],f)
