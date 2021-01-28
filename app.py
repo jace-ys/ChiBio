@@ -1594,8 +1594,9 @@ def MeasureOD(M):
         a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
         b=sysData[M]['OD0']['LASERb']
         try:
-            raw=math.log10(sysData[M]['OD0']['target']/sysData[M]['OD0']['raw'])
-            sysData[M]['OD']['current']=raw*b + raw*raw*a
+            pass
+            # raw=math.log10(sysData[M]['OD0']['target']/sysData[M]['OD0']['raw'])
+            # sysData[M]['OD']['current']=raw*b + raw*raw*a
         except:
             sysData[M]['OD']['current']=0;
             print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
@@ -1680,19 +1681,21 @@ def MeasureTemp(M,which):
     M=str(M)
     which='Thermometer' + str(which)
     if (which=='ThermometerInternal' or which=='ThermometerExternal'):
-        getData=I2CCom(M,which,1,16,0x05,0,0)
-        getDataBinary=bin(getData)
-        tempData=getDataBinary[6:]
-        temperature=float(int(tempData,2))/16.0
+        pass
+        # getData=I2CCom(M,which,1,16,0x05,0,0)
+        # getDataBinary=bin(getData)
+        # tempData=getDataBinary[6:]
+        # temperature=float(int(tempData,2))/16.0
     elif(which=='ThermometerIR'):
-        getData=I2CCom(M,which,1,0,0x07,0,1)
-        temperature = (getData*0.02) - 273.15
+        pass
+        # getData=I2CCom(M,which,1,0,0x07,0,1)
+        # temperature = (getData*0.02) - 273.15
 
-    if sysData[M]['present']==0:
-        temperature=0.0
-    if temperature>100.0:#It seems sometimes the IR thermometer returns a value of 1000 due to an error. This prevents that.
-        temperature=sysData[M][which]['current']
-    sysData[M][which]['current']=temperature
+    # if sysData[M]['present']==0:
+    #     temperature=0.0
+    # if temperature>100.0:#It seems sometimes the IR thermometer returns a value of 1000 due to an error. This prevents that.
+    #     temperature=sysData[M][which]['current']
+    # sysData[M][which]['current']=temperature
     return ('', 204)
 
 
