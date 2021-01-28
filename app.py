@@ -467,6 +467,7 @@ def setSysData():
         source = request.json["source"]
         data = request.json["data"]
         addTerminal(available, f"SysData configured by source: {source}")
+        print(str(datetime.now()) + " SysData configured by source: " + source)
     except KeyError as err:
         return (jsonify({"error": f"missing field {str(err)} in input sysData"}), 400)
 
@@ -479,7 +480,7 @@ def setSysData():
     except KeyError as err:
         return (jsonify({"error": f"could not find key {str(err)} in sysData"}), 400)
 
-    return jsonify({ available: sysData[available] })
+    return jsonify({ "device": available, "sysData": sysData[available] })
 
 
 @application.route('/changeDevice/<M>',methods=['POST'])
@@ -2075,7 +2076,13 @@ def ExperimentStartStop(M,value):
         SetOutputOn(M,'Stir',0)
         SetOutputOn(M,'Thermostat',0)
 
-    return ('', 204)
+    csv_filename = f"{sysData[M]['Experiment']['startTime']}_{M}_data.csv"
+    csv_filename = csv_filename.replace(":","_")
+
+    return jsonify({
+        "start_time": sysData[M]['Experiment']['startTime'],
+        "csv_filename": csv_filename,
+    })
 
 
 
