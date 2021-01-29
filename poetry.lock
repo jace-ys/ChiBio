@@ -29,7 +29,7 @@ dotenv = ["python-dotenv"]
 name = "gunicorn"
 version = "20.0.4"
 description = "WSGI HTTP Server for UNIX"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.4"
 
@@ -99,8 +99,8 @@ watchdog = ["watchdog"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "0541fd8b2a1406d7afed440dd081bd425b1c6bb94de42c91b526fb4ff7613e4b"
+python-versions = "^3.8"
+content-hash = "43848c905da4304a0986960a0fa1e0de5022a89cfbae368d3af7bef17534f6df"
 
 [metadata.files]
 click = [

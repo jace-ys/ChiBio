@@ -5,13 +5,13 @@ description = ""
 authors = ["jace-ys <jaceys.tan@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 Flask = "^1.1.2"
+gunicorn = "^20.0.4"
 numpy = "^1.19.5"
 simplejson = "^3.17.2"
 
 [tool.poetry.dev-dependencies]
-gunicorn = "^20.0.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

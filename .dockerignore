@@ -1,0 +1,7 @@
+# Python
+**/.pytest_cache/
+**/__pycache__/
+**/dist/
+
+# Data
+data
