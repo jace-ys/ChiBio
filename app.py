@@ -564,6 +564,16 @@ def GetID(M):
         pt4=str(I2CCom(M,'ThermometerIR',1,0,0x3F,0,1))
         ID = pt1+pt2+pt3+pt4
 
+        # TODO: remove hardcoded device IDs
+        if M == "M0":
+            ID = "2057179751295245632"
+        elif M == "M1":
+            ID = "50187182901295245632"
+        elif M == "M2":
+            ID = "10248179711295245632"
+        else:
+            ID = "39944183021295245632"
+
     return ID
 
 
@@ -1524,19 +1534,22 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             if SMBUSFLAG==0:
                 if rw==1:
                     if hl==8:
-                        out=int(sysDevices[M][device]['device'].readU8(data1))
+                        # out=int(sysDevices[M][device]['device'].readU8(data1))
+                        pass
                     elif(hl==16):
-                        out=int(sysDevices[M][device]['device'].readU16(data1,data2))
+                        # out=int(sysDevices[M][device]['device'].readU16(data1,data2))
+                        pass
                 else:
                     if hl==8:
-                        sysDevices[M][device]['device'].write8(data1,data2)
+                        # sysDevices[M][device]['device'].write8(data1,data2)
                         out=1
                     elif(hl==16):
-                        sysDevices[M][device]['device'].write16(data1,data2)
+                        # sysDevices[M][device]['device'].write16(data1,data2)
                         out=1
 
             elif SMBUSFLAG==1:
-                out=sysDevices[M][device]['device'].read_word_data(sysDevices[M][device]['address'],data1)
+                # out=sysDevices[M][device]['device'].read_word_data(sysDevices[M][device]['address'],data1)
+                pass
             tries=-1
         except: #If the above fails then we can try again (a limited number of times)
             tries=tries+1
@@ -1752,8 +1765,9 @@ def MeasureOD(M):
         a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
         b=sysData[M]['OD0']['LASERb']
         try:
-            raw=math.log10(sysData[M]['OD0']['target']/sysData[M]['OD0']['raw'])
-            sysData[M]['OD']['current']=raw*b + raw*raw*a
+            # raw=math.log10(sysData[M]['OD0']['target']/sysData[M]['OD0']['raw'])
+            # sysData[M]['OD']['current']=raw*b + raw*raw*a
+            pass
         except:
             sysData[M]['OD']['current']=0;
             warn_msg = ' OD Measurement exception on %s (%s) device: %s' % (M, sysData[M]['DeviceID'], str(device))
@@ -1848,19 +1862,21 @@ def MeasureTemp(M,which):
     M=str(M)
     which='Thermometer' + str(which)
     if (which=='ThermometerInternal' or which=='ThermometerExternal'):
-        getData=I2CCom(M,which,1,16,0x05,0,0)
-        getDataBinary=bin(getData)
-        tempData=getDataBinary[6:]
-        temperature=float(int(tempData,2))/16.0
+        # getData=I2CCom(M,which,1,16,0x05,0,0)
+        # getDataBinary=bin(getData)
+        # tempData=getDataBinary[6:]
+        # temperature=float(int(tempData,2))/16.0
+        pass
     elif(which=='ThermometerIR'):
-        getData=I2CCom(M,which,1,0,0x07,0,1)
-        temperature = (getData*0.02) - 273.15
+        # getData=I2CCom(M,which,1,0,0x07,0,1)
+        # temperature = (getData*0.02) - 273.15
+        pass
 
-    if sysData[M]['present']==0:
-        temperature=0.0
-    if temperature>100.0:#It seems sometimes the IR thermometer returns a value of 1000 due to an error. This prevents that.
-        temperature=sysData[M][which]['current']
-    sysData[M][which]['current']=temperature
+    # if sysData[M]['present']==0:
+    #     temperature=0.0
+    # if temperature>100.0:#It seems sometimes the IR thermometer returns a value of 1000 due to an error. This prevents that.
+    #     temperature=sysData[M][which]['current']
+    # sysData[M][which]['current']=temperature
     return ('', 204)
 
 
@@ -1894,23 +1910,23 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
     CheckLowON=I2CCom(M,device,1,8,channels['ONL'],-1,0)
     CheckHighON=I2CCom(M,device,1,8,channels['ONH'],-1,0)
 
-    if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
-        ConsecutiveFails=ConsecutiveFails+1
-        warn_msg = ' Failed transmission test on %s %d times consecutively on device %s (%s)' % \
-                   (str(device), ConsecutiveFails, M, sysData[M]['DeviceID'])
-        print(str(datetime.now()) + warn_msg)
-        application.logger.warning(warn_msg)
-        if ConsecutiveFails>10:
-            sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software.
-            error_msg = 'Failed to communicate to PWM %d times on %s (%s). Disabling hardware and software!' \
-                        % (10, M, sysData[M]['DeviceID'])
-            print(error_msg)
-            application.logger.critical(error_msg)
-            os._exit(4)
-        else:
-            time.sleep(0.1)
-            sysItems['FailCount']=sysItems['FailCount']+1
-            setPWM(M,device,channels,fraction,ConsecutiveFails)
+    # if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
+    #     ConsecutiveFails=ConsecutiveFails+1
+    #     warn_msg = ' Failed transmission test on %s %d times consecutively on device %s (%s)' % \
+    #                (str(device), ConsecutiveFails, M, sysData[M]['DeviceID'])
+    #     print(str(datetime.now()) + warn_msg)
+    #     application.logger.warning(warn_msg)
+    #     if ConsecutiveFails>10:
+    #         sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software.
+    #         error_msg = 'Failed to communicate to PWM %d times on %s (%s). Disabling hardware and software!' \
+    #                     % (10, M, sysData[M]['DeviceID'])
+    #         print(error_msg)
+    #         application.logger.critical(error_msg)
+    #         os._exit(4)
+    #     else:
+    #         time.sleep(0.1)
+    #         sysItems['FailCount']=sysItems['FailCount']+1
+    #         setPWM(M,device,channels,fraction,ConsecutiveFails)
 
 
 
@@ -2221,7 +2237,7 @@ def ExperimentStartStop(M,value):
     value=int(value)
     #Turning it on involves keeping current pump directions,
     if (value and (sysData[M]['Experiment']['ON']==0)):
-
+        print(str(datetime.now()) + " Experiment started")
         sysData[M]['Experiment']['ON']=1
         addTerminal(M, 'Experiment on %s (%s) Started' % (M, sysData[M]['DeviceID']))
 
@@ -2249,6 +2265,7 @@ def ExperimentStartStop(M,value):
         sysDevices[M]['Experiment'].start();
 
     else:
+        print(str(datetime.now()) + " Experiment stopped")
         sysData[M]['Experiment']['ON']=0
         sysData[M]['OD']['ON']=0
         addTerminal(M,'Experiment on %s (%s) Stopping at end of cycle' % (M, sysData[M]['DeviceID']))
@@ -2292,7 +2309,7 @@ def runExperiment(M,placeholder):
     # We now measure OD N times and take the average to reduce noise when in auto mode!
     ODV = 0.0
     for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']):
-        MeasureOD(M)
+        # MeasureOD(M)
         ODV=ODV+sysData[M]['OD']['current']
         time.sleep(0.25)
     sysData[M]['OD']['current'] = ODV/float(application.config['NUMBER_OF_OD_MEASUREMENTS'])
@@ -2300,9 +2317,9 @@ def runExperiment(M,placeholder):
                             % (sysData[M]['OD']['current'], application.config['NUMBER_OF_OD_MEASUREMENTS'],
                                M, sysData[M]['DeviceID'] ))
 
-    MeasureTemp(M,'Internal') #Measuring all temperatures
-    MeasureTemp(M,'External')
-    MeasureTemp(M,'IR')
+    # MeasureTemp(M,'Internal') #Measuring all temperatures
+    # MeasureTemp(M,'External')
+    # MeasureTemp(M,'IR')
     MeasureFP(M) #And now fluorescent protein concentrations.
 
     #Temporary Biofilm Section - the below makes the device all spectral data for all LEDs each cycle.
