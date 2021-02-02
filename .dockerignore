@@ -1,0 +1,10 @@
+# Python
+**/.pytest_cache/
+**/__pycache__/
+**/dist/
+
+# Log files
+log/chibio.log
+
+# Data files
+data
