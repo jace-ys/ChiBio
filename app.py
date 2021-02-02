@@ -2263,7 +2263,6 @@ def ExperimentStartStop(M,value):
     value=int(value)
     #Turning it on involves keeping current pump directions,
     if (value and (sysData[M]['Experiment']['ON']==0)):
-
         sysData[M]['Experiment']['ON']=1
         addTerminal(M, 'Experiment on %s (%s) Started' % (M, sysData[M]['DeviceID']))
 
@@ -2290,6 +2289,9 @@ def ExperimentStartStop(M,value):
         sysDevices[M]['Experiment'].setDaemon(True)
         sysDevices[M]['Experiment'].start();
 
+        print(f"{datetime.now()} Experiment started on {M} ({sysData[M]['DeviceID']}): {sysData[M]['Experiment']['experimentID']}")
+        return jsonify({"experimentID": sysData[M]['Experiment']['experimentID']})
+
     else:
         sysData[M]['Experiment']['ON']=0
         sysData[M]['OD']['ON']=0
@@ -2299,7 +2301,8 @@ def ExperimentStartStop(M,value):
         SetOutputOn(M,'Stir',0)
         SetOutputOn(M,'Thermostat',0)
 
-    return ('', 204)
+        print(f"{datetime.now()} Experiment stopped on {M} ({sysData[M]['DeviceID']}): {sysData[M]['Experiment']['experimentID']}")
+        return ('', 204)
 
 
 
