@@ -5,7 +5,7 @@ import os
 import random
 import time
 import math
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from threading import Thread, Lock
 import threading
 import numpy as np
@@ -519,6 +519,48 @@ def getSysdata():
             else:
                 outputdata['presentDevices'][M]=0
     return jsonify(outputdata)
+
+@application.route("/sysData", methods=["POST"])
+def setSysData():
+    global sysData
+
+    # Get request source and data, and display source on terminal for device M
+    try:
+        source, device, data = request.json["source"], request.json["device"], request.json["sysData"]
+    except KeyError as err:
+        return (jsonify({"error": f"missing field {str(err)} in payload"}), 400)
+
+    # Validate device name of device M
+    try:
+        M, device_name = device["M"], device["name"]
+    except KeyError as err:
+        return (jsonify({"error": f"missing field {str(err)} in device payload"}), 400)
+
+    try:
+        sysDataM = sysData[M]
+    except KeyError as err:
+        return (jsonify({"error": f"invalid device {str(err)} in device payload"}), 400)
+
+    if device_name != sysDataM["DeviceName"]:
+        return (jsonify({"error": f"incorrect device {device_name} at position {M}"}), 400)
+
+    device_id = sysDataM["DeviceID"]
+    addTerminal(M, f"SysData for {M} ({device_id}) configured by source: {source}")
+    print(f"{datetime.now()} SysData for {M} ({device_id}) configured by source: {source}")
+
+    # Merge request data into each key of sysData for device M
+    try:
+        for key, value in data.items():
+            default = sysData[M][key]
+            sysData[M][key] = {**default, **value}
+            addTerminal(M, f"{key}: {value}")
+    except KeyError as err:
+        return (jsonify({"error": f"could not find key {str(err)} in sysData"}), 400)
+
+    return jsonify({
+        "device": {"M": M, "name": device_name, "ID": device_id},
+        "sysData": sysData[M],
+    })
 
 @application.route('/changeDevice/<M>',methods=['POST'])
 def changeDevice(M):
