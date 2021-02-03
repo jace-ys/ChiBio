@@ -539,10 +539,13 @@ def setSysData():
     try:
         sysDataM = sysData[M]
     except KeyError as err:
-        return (jsonify({"error": f"invalid device {str(err)} in device payload"}), 400)
+        return (jsonify({"error": f"invalid device {str(err)} in device payload"}), 422)
 
+    # Reject if device M is currently active or if the device name does not match the setup
+    if sysDataM["Experiment"]["ON"] == 1:
+        return (jsonify({"error": f"device at position {M} is currently active"}), 422)
     if device_name != sysDataM["DeviceName"]:
-        return (jsonify({"error": f"incorrect device {device_name} at position {M}"}), 400)
+        return (jsonify({"error": f"incorrect device {device_name} at position {M}"}), 422)
 
     device_id = sysDataM["DeviceID"]
     addTerminal(M, f"SysData for {M} ({device_id}) configured by source: {source}")
