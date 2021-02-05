@@ -2253,6 +2253,22 @@ def ExperimentReset():
     initialise(sysItems['UIDevice'])
     return ('', 204)
 
+@application.route("/Experiment/<M>", methods=["POST"])
+def CreateExperiment(M):
+    now = datetime.now()
+    experiment_id = createExperiment(M, now)
+
+    return jsonify({"experimentID": experiment_id})
+
+def createExperiment(M, time):
+    time_string = time.strftime("%Y-%m-%d %H:%M:%S")
+    beaglebone_name = application.config["BEAGLEBONE_NAME"]
+    device_id = sysData[M]["DeviceID"]
+    experiment_id = f"{beaglebone_name}_{time_string.replace(':', '_')}_{M}_{device_id}"
+    sysData[M]['Experiment']['experimentID'] = experiment_id
+
+    return experiment_id
+
 @application.route("/Experiment/<value>/<M>",methods=['POST'])
 def ExperimentStartStop(M,value):
     #Stops or starts an experiment.
@@ -2273,11 +2289,8 @@ def ExperimentStartStop(M,value):
             now=datetime.now()
             timeString=now.strftime("%Y-%m-%d %H:%M:%S")
             sysData[M]['Experiment']['startTime']=timeString
-            sysData[M]['Experiment']['experimentID'] = '%s_%s_%s_%s' % \
-                                                       (application.config['BEAGLEBONE_NAME'],
-                                                        sysData[M]['Experiment']['startTime'].replace(":","_"),
-                                                        M,
-                                                        sysData[M]['DeviceID'])
+            if sysData[M]['Experiment']['experimentID'] is None:
+                sysData[M]['Experiment']['experimentID'] = createExperiment(M, now)
             application.logger.info('Experiment ID: %s has been assign to %s (%s)' %
                                     (sysData[M]['Experiment']['experimentID'], M, sysData[M]['DeviceID']))
             sysData[M]['Experiment']['startTimeRaw']=now
