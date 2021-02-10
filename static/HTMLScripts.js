@@ -475,7 +475,7 @@ function updateData(data){
 
 
        // Following if statement is for things that should be done only when changing betwix devices.
-        if (document.getElementById("FPRefresh").value != data.UIDevice){
+       // if (document.getElementById("FPRefresh").value != data.UIDevice){
             document.getElementById("FPRefresh").value = data.UIDevice
 
             document.getElementById("FPExcite1").value = data.FP1.LED
@@ -495,7 +495,7 @@ function updateData(data){
             document.getElementById("FPEmit3A").value = data.FP3.Emit1Band
             document.getElementById("FPEmit3B").value = data.FP3.Emit2Band
             document.getElementById("FPGain3").value = data.FP3.Gain
-        }
+        // }
 
         // Now to draw the charts
         if( document.getElementById("GraphReplot").value!== data.time.record.length || document.getElementById("FPRefresh").innerHTML != data.UIDevice){
